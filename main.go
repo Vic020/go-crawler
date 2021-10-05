@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/vic020/go-crawler/manager"
+	"github.com/vic020/go-crawler/core/manager"
 )
 
 func daemonize(args ...string) {

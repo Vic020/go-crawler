@@ -1,6 +1,9 @@
-package modeles
+package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Task struct {
 	// Base
@@ -38,4 +41,14 @@ func (t *Task) ToJson() string {
 		return "{}"
 	}
 	return string(b)
+}
+
+func (t *Task) modifyTime() {
+	t.ModifiedTime = time.Now().Unix()
+}
+
+func (t *Task) SetRawHTML(raw string) {
+	t.RawHTML = raw
+	t.LastestCrawledTime = time.Now().Unix()
+	t.modifyTime()
 }

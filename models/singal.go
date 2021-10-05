@@ -1,4 +1,4 @@
-package modeles
+package models
 
 type SignalStruct interface {
 	Run()

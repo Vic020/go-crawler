@@ -16,6 +16,10 @@ func (s *HTTPServer) Run(addr string) {
 
 }
 
+func (s *HTTPServer) Close() {
+
+}
+
 func (s *HTTPServer) FastHTTPHandler(ctx *fasthttp.RequestCtx) {
 	fmt.Fprintf(ctx, "Path: %v, Version: %v", string(ctx.Path()), s.version)
 }
