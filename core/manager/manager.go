@@ -2,7 +2,6 @@ package manager
 
 import (
 	"flag"
-	"fmt"
 	"sync"
 
 	"github.com/vic020/go-crawler/api"
@@ -64,7 +63,7 @@ func (c *Manager) Init() {
 
 func GetInstance() *Manager {
 	once.Do(func() {
-		fmt.Println("Manager initializing...")
+		logger.Info("Manager initializing...")
 		manager = &Manager{
 			id: "vic",
 		}

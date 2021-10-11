@@ -13,6 +13,10 @@ import (
 const (
 	LogErrorFileName = "go-crawler.error.log"
 	LogStdFileName   = "go-crawler.log"
+
+	DebugPrefix = "[DEBUG] "
+	InfoPrefix  = "[INFO] "
+	ErrorPrefix = "[ERROR]"
 )
 
 var (
@@ -21,11 +25,11 @@ var (
 	errorLogger *log.Logger
 )
 
-// func init() {
-// 	debugLogger = log.New(os.Stdout, "[DEBUG]", log.Ldate|log.Ltime|log.Lshortfile)
-// 	infoLogger = log.New(os.Stdout, "[Info]", log.Ldate|log.Ltime|log.Lshortfile)
-// 	errorLogger = log.New(os.Stderr, "[ERROR]", log.Ldate|log.Ltime|log.Lshortfile)
-// }
+func init() {
+	debugLogger = log.New(os.Stdout, DebugPrefix, log.Ldate|log.Ltime|log.Lshortfile)
+	infoLogger = log.New(os.Stdout, InfoPrefix, log.Ldate|log.Ltime|log.Lshortfile)
+	errorLogger = log.New(os.Stderr, ErrorPrefix, log.Ldate|log.Ltime|log.Lshortfile)
+}
 
 func initLoggerHelper(logPath, name, prefix string) *log.Logger {
 	fileName := path.Join(logPath, name)
@@ -48,10 +52,10 @@ func initLoggerHelper(logPath, name, prefix string) *log.Logger {
 }
 
 func InitLogger(logPath string) {
-	debugLogger = log.New(os.Stdout, "[DEBUG] ", log.Ldate|log.Ltime|log.Lshortfile)
+	debugLogger = log.New(os.Stdout, DebugPrefix, log.Ldate|log.Ltime|log.Lshortfile)
 
-	infoLogger = initLoggerHelper(logPath, LogStdFileName, "[INFO] ")
-	errorLogger = initLoggerHelper(logPath, LogErrorFileName, "[Error] ")
+	infoLogger = initLoggerHelper(logPath, LogStdFileName, InfoPrefix)
+	errorLogger = initLoggerHelper(logPath, LogErrorFileName, ErrorPrefix)
 
 }
 

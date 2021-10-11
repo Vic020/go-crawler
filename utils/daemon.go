@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
+
+	"github.com/vic020/go-crawler/utils/logger"
 )
 
 func daemonize(args ...string) {
@@ -32,7 +33,7 @@ func IsDaemonized() {
 		}
 	}
 
-	fmt.Println("Is Daemonized: ", daemon)
+	logger.Info("Is Daemonized: ", daemon)
 
 	if daemon {
 		daemonize(args...)
