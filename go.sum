@@ -14,6 +14,8 @@ github.com/klauspost/compress v1.13.1 h1:wXr2uRxZTJXHLly6qhJabee5JqIhTRoLBhDOA74
 github.com/klauspost/compress v1.13.1/go.mod h1:8dP1Hq4DHOhN9w426knH3Rhby4rFm6D8eO+e+Dq5Gzg=
 github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a h1:DGFy/362j92vQRE3ThU1yqg9TuJS8YJOSbQuB7BP9cA=
 github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a/go.mod h1:jVntzcUU+2BtVohZBQmSHWUmh8B55LCNfPhcNCIvvIg=
+github.com/natefinch/lumberjack v2.0.0+incompatible h1:4QJd3OLAMgj7ph+yZTuX13Ld4UpgHp07nNdFX7mqFfM=
+github.com/natefinch/lumberjack v2.0.0+incompatible/go.mod h1:Wi9p2TTF5DG5oU+6YfsmYQpsTIOm0B1VNzQg9Mw6nPk=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasthttp v1.27.0 h1:gDefRDL9aqSiwXV6aRW8aSBPs82y4KizSzHrBLf4NDI=

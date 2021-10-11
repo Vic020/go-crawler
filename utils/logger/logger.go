@@ -1,8 +1,18 @@
 package logger
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"os"
+	"path"
+
+	"github.com/natefinch/lumberjack"
+)
+
+const (
+	LogErrorFileName = "go-crawler.error.log"
+	LogStdFileName   = "go-crawler.log"
 )
 
 var (
@@ -11,20 +21,52 @@ var (
 	errorLogger *log.Logger
 )
 
-func init() {
-	debugLogger = log.New(os.Stdout, "[DEBUG]", log.Ldate|log.Ltime|log.Lshortfile)
-	infoLogger = log.New(os.Stdout, "[Info]", log.Ldate|log.Ltime|log.Lshortfile)
-	errorLogger = log.New(os.Stderr, "[ERROR]", log.Ldate|log.Ltime|log.Lshortfile)
+// func init() {
+// 	debugLogger = log.New(os.Stdout, "[DEBUG]", log.Ldate|log.Ltime|log.Lshortfile)
+// 	infoLogger = log.New(os.Stdout, "[Info]", log.Ldate|log.Ltime|log.Lshortfile)
+// 	errorLogger = log.New(os.Stderr, "[ERROR]", log.Ldate|log.Ltime|log.Lshortfile)
+// }
+
+func initLoggerHelper(logPath, name, prefix string) *log.Logger {
+	fileName := path.Join(logPath, name)
+
+	// f, err := os.OpenFile(path.Join(logPath, name),
+	// 	os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// if err != nil {
+	// 	fmt.Printf("error opening file: %v", err)
+	// 	os.Exit(1)
+	// }
+	// f.Close()
+
+	return log.New(io.MultiWriter(&lumberjack.Logger{
+		Filename:   fileName,
+		MaxSize:    500,
+		MaxAge:     30,
+		MaxBackups: 0,
+	}, os.Stdout), prefix, log.Ldate|log.Ltime|log.Lshortfile)
+
+}
+
+func InitLogger(logPath string) {
+	debugLogger = log.New(os.Stdout, "[DEBUG] ", log.Ldate|log.Ltime|log.Lshortfile)
+
+	infoLogger = initLoggerHelper(logPath, LogStdFileName, "[INFO] ")
+	errorLogger = initLoggerHelper(logPath, LogErrorFileName, "[Error] ")
+
 }
 
 func Debug(v ...interface{}) {
-	debugLogger.Println(v...)
+	debugLogger.Output(2, fmt.Sprintln(v...))
 }
 
 func Info(v ...interface{}) {
-	infoLogger.Println(v...)
+	infoLogger.Output(2, fmt.Sprintln(v...))
+}
+
+func Infof(format string, v ...interface{}) {
+	infoLogger.Output(2, fmt.Sprintf(format, v...))
 }
 
 func Error(v ...interface{}) {
-	errorLogger.Println(v...)
+	errorLogger.Output(2, fmt.Sprintln(v...))
 }

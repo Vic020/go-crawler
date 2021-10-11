@@ -5,13 +5,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/levigross/grequests"
+	"github.com/vic020/go-crawler/core/limiter"
 	"github.com/vic020/go-crawler/models"
 	"github.com/vic020/go-crawler/utils/logger"
 )
 
 type Fetcher struct {
 	id        string           // fetcher uuid
-	limiter   chan int         // fetcher rate limit
+	limiter   *limiter.Limiter // fetcher rate limit
 	taskQueue chan models.Task // fetcher tasks queue
 	outQueue  chan models.Task // fetcher result tasks queue
 	signal    chan int         // fetcher signal
@@ -20,12 +21,17 @@ type Fetcher struct {
 }
 
 func (fc *Fetcher) process(task models.Task) {
+	logger.Info(fc.id, task.ID, task.URL, "fetch")
 	// blocking for token
-	<-fc.limiter
+	fc.limiter.Take()
+
+	logger.Info(fc.id, task.ID, task.URL, "fetching")
 
 	rawHtml := fc.fetch(task)
 
 	task.RawHTML = rawHtml
+
+	logger.Info(fc.id, task.ID, task.URL, "fetched")
 
 	fc.outQueue <- task
 
@@ -70,8 +76,8 @@ func (fc *Fetcher) GetId() string {
 	return fc.id
 }
 
-func NewFetcher(limiter chan int, inQueue, outQueue chan models.Task) *Fetcher {
-	return &Fetcher{
+func NewFetcher(limiter *limiter.Limiter, inQueue, outQueue chan models.Task) *Fetcher {
+	f := &Fetcher{
 		id:        uuid.NewString(),
 		limiter:   limiter,
 		taskQueue: inQueue,
@@ -80,6 +86,11 @@ func NewFetcher(limiter chan int, inQueue, outQueue chan models.Task) *Fetcher {
 		close:     make(chan int),
 		isRunning: false,
 	}
+
+	logger.Info("New fetch inited, id: ", f.id)
+
+	return f
+
 }
 
 func (fc *Fetcher) Run() {
@@ -88,6 +99,8 @@ func (fc *Fetcher) Run() {
 	}
 	go fc.loop()
 	fc.isRunning = true
+
+	logger.Infof("Fetcher %v is running", fc.id)
 }
 
 func (fc *Fetcher) Close() {
