@@ -57,6 +57,7 @@ func (fc *Fetcher) loop() {
 			// control signal
 			switch singal {
 			case 0:
+				logger.Infof("Fetcher %v, loop get close signal", fc.id)
 				// Fetcher exit
 				close(fc.signal)
 				fc.close <- 0
@@ -107,6 +108,8 @@ func (fc *Fetcher) Close() {
 	if !fc.isRunning {
 		return
 	}
+
+	logger.Infof("Fetcher %v is closing", fc.id)
 
 	fc.signal <- 0
 	<-fc.close

@@ -20,6 +20,10 @@ const (
 )
 
 var (
+	DebugMode = false
+)
+
+var (
 	debugLogger *log.Logger
 	infoLogger  *log.Logger
 	errorLogger *log.Logger
@@ -51,16 +55,30 @@ func initLoggerHelper(logPath, name, prefix string) *log.Logger {
 
 }
 
-func InitLogger(logPath string) {
-	debugLogger = log.New(os.Stdout, DebugPrefix, log.Ldate|log.Ltime|log.Lshortfile)
+type LoggerOptions struct {
+	LogPath   string
+	DebugMode bool
+}
 
-	infoLogger = initLoggerHelper(logPath, LogStdFileName, InfoPrefix)
-	errorLogger = initLoggerHelper(logPath, LogErrorFileName, ErrorPrefix)
+func InitLogger(ops LoggerOptions) {
+
+	DebugMode = ops.DebugMode
+
+	infoLogger = initLoggerHelper(ops.LogPath, LogStdFileName, InfoPrefix)
+	errorLogger = initLoggerHelper(ops.LogPath, LogErrorFileName, ErrorPrefix)
 
 }
 
 func Debug(v ...interface{}) {
-	debugLogger.Output(2, fmt.Sprintln(v...))
+	if DebugMode {
+		debugLogger.Output(2, fmt.Sprintln(v...))
+	}
+}
+
+func Debugf(format string, v ...interface{}) {
+	if DebugMode {
+		debugLogger.Output(2, fmt.Sprintf(format, v...))
+	}
 }
 
 func Info(v ...interface{}) {
@@ -73,4 +91,8 @@ func Infof(format string, v ...interface{}) {
 
 func Error(v ...interface{}) {
 	errorLogger.Output(2, fmt.Sprintln(v...))
+}
+
+func Errorf(format string, v ...interface{}) {
+	errorLogger.Output(2, fmt.Sprintf(format, v...))
 }

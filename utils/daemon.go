@@ -5,10 +5,20 @@ import (
 	"os/exec"
 	"syscall"
 
+	"github.com/vic020/go-crawler/conf"
 	"github.com/vic020/go-crawler/utils/logger"
 )
 
-func daemonize(args ...string) {
+func daemonize() {
+
+	args := os.Args
+
+	// remove -d flag
+	for k, v := range args {
+		if v == "-d" {
+			args[k] = ""
+		}
+	}
 
 	var newArgs []string
 
@@ -22,21 +32,12 @@ func daemonize(args ...string) {
 }
 
 func IsDaemonized() {
-	daemon := false
+	logger.Info("Is Daemonized: ", conf.DaemonMode)
 
-	args := os.Args
-
-	for k, v := range args {
-		if v == "-d" {
-			daemon = true
-			args[k] = ""
-		}
+	if !conf.DaemonMode {
+		return
 	}
 
-	logger.Info("Is Daemonized: ", daemon)
-
-	if daemon {
-		daemonize(args...)
-		syscall.Exit(0)
-	}
+	daemonize()
+	syscall.Exit(0)
 }

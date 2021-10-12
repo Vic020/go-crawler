@@ -1,10 +1,10 @@
 package manager
 
 import (
-	"flag"
 	"sync"
 
 	"github.com/vic020/go-crawler/api"
+	"github.com/vic020/go-crawler/conf"
 	"github.com/vic020/go-crawler/core/fetcher"
 	"github.com/vic020/go-crawler/core/limiter"
 	"github.com/vic020/go-crawler/models"
@@ -12,8 +12,12 @@ import (
 )
 
 type Manager struct {
-	id       string
-	logPath  string
+	id string
+
+	// config
+	logPath   string
+	debugMode bool
+
 	services Services
 }
 
@@ -27,10 +31,6 @@ var (
 	once    sync.Once
 )
 
-func (c *Manager) initFlag() {
-	flag.StringVar(&c.logPath, "log", "logs/", "logs file")
-}
-
 func (c *Manager) initFetcher(num int, limiter *limiter.Limiter, in, out chan models.Task) {
 	logger.Info("Fetcher initializing...")
 	for i := 0; i < num; i++ {
@@ -43,11 +43,19 @@ func (c *Manager) initFetcher(num int, limiter *limiter.Limiter, in, out chan mo
 	logger.Info("Fetcher initialized")
 }
 
-func (c *Manager) Init() {
-	c.initFlag()
-	logger.InitLogger(c.logPath)
+func (c *Manager) initLogger() {
+	ops := logger.LoggerOptions{
+		LogPath:   c.logPath,
+		DebugMode: c.debugMode,
+	}
 
+	logger.Infof("Log init... path:%v debug:%v", ops.LogPath, ops.DebugMode)
+	logger.InitLogger(ops)
 	logger.Info("Log init completed")
+}
+
+func (c *Manager) Init() {
+	c.initLogger()
 
 	FetchTasks := make(chan models.Task, 100)
 	ResultTasks := make(chan models.Task, 100)
@@ -65,7 +73,9 @@ func GetInstance() *Manager {
 	once.Do(func() {
 		logger.Info("Manager initializing...")
 		manager = &Manager{
-			id: "vic",
+			id:        "vic",
+			logPath:   conf.LogPath,
+			debugMode: conf.DebugMode,
 		}
 		manager.Init()
 	})

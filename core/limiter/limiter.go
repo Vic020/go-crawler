@@ -4,11 +4,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vic020/go-crawler/utils/logger"
 )
 
 type Limiter struct {
 	// config
+	id  string
 	qps int
 
 	// inner resources
@@ -24,13 +26,17 @@ func NewLimiter(qps int) *Limiter {
 		os.Exit(1)
 	}
 
-	return &Limiter{
+	l := &Limiter{
+		id:        uuid.NewString(),
 		qps:       qps,
 		bucket:    make(chan int, qps),
 		signal:    make(chan int, 1),
 		close:     make(chan int),
 		isRunning: false,
 	}
+	logger.Infof("New limiter inited, id: %v, qps: %v", l.id, l.qps)
+
+	return l
 }
 
 func (l *Limiter) genToken(d time.Duration) {
@@ -41,13 +47,21 @@ func (l *Limiter) genToken(d time.Duration) {
 		select {
 		case <-t.C:
 			// gen token main worker
+			logger.Debug("limiter gen new token")
+			
 			select {
 			case l.bucket <- 1:
 			default:
+
+				logger.Debug("limiter bucket is full")
+				
 				continue
 			}
+
 		case signal := <-l.signal:
 			// close control
+			logger.Debugf("limiter %v get close signal", l.id)
+			
 			switch signal {
 			case 0:
 				close(l.signal)
