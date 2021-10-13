@@ -30,13 +30,16 @@ func usageFunc() {
 }
 
 func InitFlag() {
+	// help usage
+	flag.Usage = usageFunc
+
+	// Command line args
 	flag.StringVar(&LogPath, "log", "logs/", "logs file")
 	flag.BoolVar(&DebugMode, "debug", false, "debug mode")
 	flag.BoolVar(&DaemonMode, "d", false, "daemon mode")
 	flag.Parse()
 
+	// other command
 	Commands = flag.Args()
 	Command = flag.Arg(0)
-
-	flag.Usage = usageFunc
 }

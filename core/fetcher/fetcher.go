@@ -98,6 +98,7 @@ func (fc *Fetcher) Run() {
 	if fc.isRunning {
 		return
 	}
+
 	go fc.loop()
 	fc.isRunning = true
 

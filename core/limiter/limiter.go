@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/vic020/go-crawler/conf"
 	"github.com/vic020/go-crawler/utils/logger"
 )
 
@@ -24,6 +25,12 @@ func NewLimiter(qps int) *Limiter {
 	if qps == 0 {
 		logger.Error("qps = 0")
 		os.Exit(1)
+	}
+
+	if conf.DebugMode {
+		// Avoid abuse debug mode for limiter
+		logger.Debug("---!!!DEBUG MODE is on, qps must be 1!!!---")
+		qps = 1
 	}
 
 	l := &Limiter{
@@ -48,20 +55,20 @@ func (l *Limiter) genToken(d time.Duration) {
 		case <-t.C:
 			// gen token main worker
 			logger.Debug("limiter gen new token")
-			
+
 			select {
 			case l.bucket <- 1:
 			default:
 
 				logger.Debug("limiter bucket is full")
-				
+
 				continue
 			}
 
 		case signal := <-l.signal:
 			// close control
 			logger.Debugf("limiter %v get close signal", l.id)
-			
+
 			switch signal {
 			case 0:
 				close(l.signal)

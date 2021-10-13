@@ -63,6 +63,9 @@ type LoggerOptions struct {
 func InitLogger(ops LoggerOptions) {
 
 	DebugMode = ops.DebugMode
+	if DebugMode {
+		Debug("Debug Enable")
+	}
 
 	infoLogger = initLoggerHelper(ops.LogPath, LogStdFileName, InfoPrefix)
 	errorLogger = initLoggerHelper(ops.LogPath, LogErrorFileName, ErrorPrefix)

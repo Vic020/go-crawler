@@ -3,6 +3,7 @@ package manager
 import (
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/vic020/go-crawler/api"
 	"github.com/vic020/go-crawler/conf"
 	"github.com/vic020/go-crawler/core/fetcher"
@@ -22,6 +23,7 @@ type Manager struct {
 }
 
 type Services struct {
+	limiter    *limiter.Limiter
 	fetcher    []*fetcher.Fetcher
 	httpServer *api.HTTPServer
 }
@@ -49,7 +51,7 @@ func (c *Manager) initLogger() {
 		DebugMode: c.debugMode,
 	}
 
-	logger.Infof("Log init... path:%v debug:%v", ops.LogPath, ops.DebugMode)
+	logger.Info("Log init...")
 	logger.InitLogger(ops)
 	logger.Info("Log init completed")
 }
@@ -60,30 +62,36 @@ func (c *Manager) Init() {
 	FetchTasks := make(chan models.Task, 100)
 	ResultTasks := make(chan models.Task, 100)
 
-	limiter := limiter.NewLimiter(10)
+	c.services.limiter = limiter.NewLimiter(10)
 
-	c.initFetcher(1, limiter, FetchTasks, ResultTasks)
+	c.initFetcher(1, c.services.limiter, FetchTasks, ResultTasks)
 
 	c.services.httpServer = api.NewHTTPServer()
 
-	logger.Info("Manager initialized")
 }
 
 func GetInstance() *Manager {
 	once.Do(func() {
-		logger.Info("Manager initializing...")
+		logger.Info("Manager init...")
+
 		manager = &Manager{
-			id:        "vic",
+			id:        uuid.NewString(),
 			logPath:   conf.LogPath,
 			debugMode: conf.DebugMode,
 		}
 		manager.Init()
+
+		logger.Info("Manager init completed")
 	})
 
 	return manager
 }
 
 func (c *Manager) Run() {
+	logger.Infof("Manager %v start...", c.id)
+
+	c.services.limiter.Run()
+
 	for _, fetch := range c.services.fetcher {
 		fetch.Run()
 	}
