@@ -11,14 +11,15 @@ type Task struct {
 	CreatedTime  int64  `json:"created_time"`
 	ModifiedTime int64  `json:"modified_time"`
 	DeletedTime  int64  `json:"deleted_time"`
+	Version      string `json:"version"`
 
 	// Crawl
-	URL                string   `json:"url"`
-	Path               string   `json:"path"`
-	Query              string   `json:"query"`
-	RawHTML            string   `json:"raw_html"`
-	LastestCrawledTime int64    `json:"lastest_crawled_time"`
-	CrawledTimes       []string `json:"crawled_times"`
+	URL                string  `json:"url"`
+	Path               string  `json:"path"`
+	Query              string  `json:"query"`
+	RawHTML            string  `json:"raw_html"`
+	LastestCrawledTime int64   `json:"lastest_crawled_time"`
+	CrawledTimes       []int64 `json:"crawled_times"`
 
 	// Sechedule
 	Crontab     string `json:"crontab"`
